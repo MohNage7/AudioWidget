@@ -92,27 +92,31 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
     private List<Audio> getAudioList() {
         final List<Audio> tempAudioList = new ArrayList<>();
+        try {
+            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
+            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+            String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+            Cursor c = getApplicationContext().getContentResolver().query(uri, projection, selection, null, sortOrder);
 
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
-        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
-        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
-        Cursor c = getApplicationContext().getContentResolver().query(uri, projection, selection, null, sortOrder);
-
-        if (c != null) {
-            while (c.moveToNext()) {
-                String path = c.getString(0);
-                String album = c.getString(1);
-                String artist = c.getString(2);
-                String name = path.substring(path.lastIndexOf("/") + 1);
-                Audio audioModel = new Audio();
-                audioModel.setName(name);
-                audioModel.setAlbum(album);
-                audioModel.setArtist(artist);
-                audioModel.setPath(path);
-                tempAudioList.add(audioModel);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String path = c.getString(0);
+                    String album = c.getString(1);
+                    String artist = c.getString(2);
+                    String name = path.substring(path.lastIndexOf("/") + 1);
+                    Audio audioModel = new Audio();
+                    audioModel.setName(name);
+                    audioModel.setAlbum(album);
+                    audioModel.setArtist(artist);
+                    audioModel.setPath(path);
+                    tempAudioList.add(audioModel);
+                }
+                c.close();
             }
-            c.close();
+        } catch (SecurityException e) {
+            Log.e(TAG, "Please enable storage permission from AudioActivity.");
+            Log.e(TAG, e.getLocalizedMessage());
         }
         return tempAudioList;
     }
