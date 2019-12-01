@@ -2,16 +2,19 @@
 It's mainly a widget that plays random .mp3 file from the device's library.
 ### Current Features 
 
-* Play random image
-* Stop image
-* Shuffle images. 
+* Play random audio file.
+* Stop audio.
+* Shuffle audio files. 
 * Display audio's meta data like (Artist name, Audio name, Album image).
+* Handle interruptions.
 
 ### Todos 
 
 * Display all available audio files inside AudiActivity.
 * Add MediaStyle Notification and sync it with the Widget.
 * Prepare the audio file for the widget to be played. instead of triggering the service only when the user interacts with the widget.
+* Enhance Shuffle logic to play random songs only one time.
+* Implement continues audio play feature. 
 
 ## Preview 
 
