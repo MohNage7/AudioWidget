@@ -2,9 +2,9 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialKeyguardLayout="@layout/audio_widget"
     android:initialLayout="@layout/audio_widget"
-    android:minWidth="300dp"
-    android:minHeight="80dp"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:minWidth="272dp"
+    android:minHeight="56dp"
+    android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />

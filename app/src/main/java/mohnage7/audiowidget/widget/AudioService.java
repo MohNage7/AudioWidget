@@ -1,4 +1,4 @@
-package mohnage7.audiowidget;
+package mohnage7.audiowidget.widget;
 
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -15,30 +15,31 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+
+import mohnage7.audiowidget.data.Audio;
 
 public class AudioService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String ACTION_PLAY = "play";
+    public static final String ACTION_PAUSE = "pause";
     public static final String ACTION_STOP = "stop";
     public static final String ACTION_SHUFFLE = "shuffle";
     public static final String ACTION = "action";
-
+    private static final int DEFAULT_POSITION = 0;
     private static final String TAG = AudioService.class.getSimpleName();
     Random random = new Random();
     private MediaPlayer mediaPlayer;
-    private int resumePosition;
+    private int resumePosition = DEFAULT_POSITION;
     private AudioManager audioManager;
     private List<Audio> audioList;
-    private HashSet<Integer> randomSet;
+    private Audio audio;
 
     @Override
     public void onCreate() {
         super.onCreate();
         audioList = getAudioList();
-        randomSet = new HashSet<>();
         initMediaPlayer();
     }
 
@@ -54,29 +55,36 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
             Log.d(TAG, action);
             switch (action) {
                 case ACTION_PLAY:
-                    Audio audio = getRandomAudio(audioList);
-                    updateWidget(audio, action);
-                    prepareMediaToBePlayed(audio);
+                    if (resumePosition == DEFAULT_POSITION) {
+                        audio = getRandomAudio(audioList);
+                        prepareMediaPlayerWith(audio);
+                    } else {
+                        resumeMedia();
+                    }
+                    break;
+                case ACTION_PAUSE:
+                    pauseMedia();
                     break;
                 case ACTION_STOP:
+                    audio = null;
                     stopMedia();
                     stopSelf();
-                    updateWidget(null, action);
                     break;
                 case ACTION_SHUFFLE:
                     stopMedia();
-                    Audio audio2 = getRandomAudio(audioList);
-                    updateWidget(audio2, action);
-                    prepareMediaToBePlayed(audio2);
+                    audio = getRandomAudio(audioList);
+                    prepareMediaPlayerWith(audio);
                     break;
                 default:
                     stopSelf();
             }
+            updateWidget(audio, action);
         } else {
             stopSelf();
         }
         return super.onStartCommand(intent, flags, startId);
     }
+
 
     private Audio getRandomAudio(List<Audio> audioList) {
         return audioList.get(random.nextInt(audioList.size()));
@@ -189,7 +197,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         AudioWidget.updateAppWidgets(this, appWidgetManager, audio,action, appWidgetIds);
     }
 
-    private void prepareMediaToBePlayed(Audio audio) {
+    private void prepareMediaPlayerWith(Audio audio) {
         String mediaFile = audio.getPath();
         if (mediaFile != null && !mediaFile.isEmpty()) {
             try {
@@ -250,6 +258,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         super.onDestroy();
         if (mediaPlayer != null) {
             stopMedia();
+            mediaPlayer.reset();
             mediaPlayer.release();
         }
         removeAudioFocus();

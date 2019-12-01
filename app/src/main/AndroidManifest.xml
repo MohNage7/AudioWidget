@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.AudioActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".AudioWidget">
+        <receiver android:name=".widget.AudioWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -30,7 +30,7 @@
         </receiver>
 
 
-        <service android:name=".AudioService" android:exported="true"/>
+        <service android:name=".widget.AudioService" android:exported="true"/>
     </application>
 
 </manifest>

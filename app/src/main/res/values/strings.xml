@@ -1,5 +1,13 @@
 <resources>
-    <string name="app_name">AudioWidget</string>
+    <string name="app_name">Audio Widget</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="author">By mohnage7</string>
+    <string name="msg_permission_required">Storage Permission is required for core functionality, Please enable it to be able to use the widget.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="permission_dialog_title">Permission required</string>
+    <string name="storage_permission">Storage Permission</string>
+    <string name="let_s_do_it">Let\'s do it!</string>
+    <string name="you_re_all_set">You\'re all set!</string>
+
 </resources>

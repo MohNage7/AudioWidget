@@ -6,26 +6,27 @@
     android:orientation="horizontal"
     android:padding="@dimen/widget_margin">
 
+
     <ImageView
         android:id="@+id/audioIv"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/dp_70"
+        android:layout_height="@dimen/dp_70"
         android:background="@android:color/darker_gray"
         android:src="@drawable/ic_audiotrack" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/audioNameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_2"
             android:maxLines="1"
-            android:textSize="18sp"
+            android:textSize="@dimen/font_16sp"
             android:textStyle="bold"
             tools:text="Mashofnash Kheir" />
 
@@ -33,9 +34,9 @@
             android:id="@+id/extraInfoTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/dp_4"
             android:maxLines="1"
-            android:textSize="15sp"
+            android:textSize="@dimen/font_12sp"
             tools:text="Tamer Ashour, Ayam" />
 
         <LinearLayout
@@ -50,7 +51,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="4dp"
+                android:padding="@dimen/dp_2"
                 android:src="@drawable/ic_stop" />
 
             <ImageButton
@@ -60,7 +61,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="4dp"
+                android:padding="@dimen/dp_2"
                 android:src="@drawable/ic_play" />
             <ImageButton
                 android:id="@+id/pauseBtn"
@@ -70,7 +71,7 @@
                 android:layout_weight="1"
                 android:visibility="gone"
                 android:background="@android:color/transparent"
-                android:padding="4dp"
+                android:padding="@dimen/dp_2"
                 android:src="@drawable/ic_pause" />
 
             <ImageButton
@@ -80,7 +81,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="4dp"
+                android:padding="@dimen/dp_2"
                 android:src="@drawable/ic_shuffle" />
 
         </LinearLayout>

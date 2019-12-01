@@ -1,4 +1,4 @@
-package mohnage7.audiowidget;
+package mohnage7.audiowidget.data;
 
 public class Audio {
     private String path;
