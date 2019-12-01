@@ -165,11 +165,14 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
                 }
                 mediaPlayer.release();
                 mediaPlayer = null;
+                updateWidget(null, ACTION_STOP);
+                stopSelf();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 // Lost focus for a short time and resume later.
                 if (mediaPlayer.isPlaying()) {
                     pauseMedia();
+                    updateWidget(null, ACTION_PAUSE);
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:

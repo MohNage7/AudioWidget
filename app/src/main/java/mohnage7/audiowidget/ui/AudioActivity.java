@@ -29,8 +29,14 @@ public class AudioActivity extends AppCompatActivity implements PermissionHandle
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setHandler(this);
+        setViews();
     }
 
+    private void setViews() {
+        boolean isGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+        updatePermissionViews(isGranted);
+    }
 
 
     @Override
