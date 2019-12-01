@@ -5,7 +5,11 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.drm.DrmStore;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.view.View;
 import android.widget.RemoteViews;
 
 /**
@@ -25,29 +29,68 @@ public class AudioWidget extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(p, playPendingIntent);
     }
 
-    public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                       Audio audio, int appWidgetId) {
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-                R.layout.audio_widget);
+    public static void updateAppWidgets(Context context, AppWidgetManager appWidgetManager,
+                                        Audio audio, String action, int[] appWidgetIds) {
+        for (int appWidgetId : appWidgetIds) {
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+                    R.layout.audio_widget);
 
-        setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_PLAY, PLAY_REQUEST_CODE, R.id.playBtn);
-        setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_SHUFFLE, SHUFFLE_REQUEST_CODE, R.id.shuffleBtn);
-        setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_STOP, STOP_REQUEST_CODE, R.id.stopBtn);
+            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_PLAY, PLAY_REQUEST_CODE, R.id.playBtn);
+            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_SHUFFLE, SHUFFLE_REQUEST_CODE, R.id.shuffleBtn);
+            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_STOP, STOP_REQUEST_CODE, R.id.stopBtn);
 
-        if (audio != null) {
-            Log.e("Widget", audio.getName());
+            if (audio != null) {
+                remoteViews.setTextViewText(R.id.audioNameTv, audio.getName().replace(".mp3", ""));
+                remoteViews.setTextViewText(R.id.extraInfoTv, String.format("%s - %s", audio.getArtist(), audio.getAlbum()));
+                setAudioAlbumArt(audio, remoteViews);
+            }
+            if (action!=null){
+                switch (action){
+                    case AudioService.ACTION_PLAY:
+                        remoteViews.setViewVisibility(R.id.playBtn, View.GONE);
+                        remoteViews.setViewVisibility(R.id.pauseBtn, View.VISIBLE);
+                        break;
+                    case AudioService.ACTION_STOP:
+                        remoteViews.setViewVisibility(R.id.playBtn, View.VISIBLE);
+                        remoteViews.setViewVisibility(R.id.pauseBtn, View.GONE);
+                        break;
+                    case AudioService.ACTION_SHUFFLE:
+                        remoteViews.setViewVisibility(R.id.playBtn, View.GONE);
+                        remoteViews.setViewVisibility(R.id.pauseBtn, View.VISIBLE);
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + action);
+                }
+            }
+            appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         }
+    }
 
+    private static void setAudioAlbumArt(Audio audio, RemoteViews remoteViews) {
+        Bitmap bitmap = getAlbumImage(audio.getPath());
+        if (bitmap!=null) {
+            remoteViews.setBitmap(R.id.audioIv, "setImageBitmap", bitmap);
+        }else {
+            remoteViews.setImageViewResource(R.id.audioIv, R.drawable.ic_audiotrack);
+        }
+    }
 
-        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+    private static Bitmap getAlbumImage(String path) {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(path);
+        byte[] data = mediaMetadataRetriever.getEmbeddedPicture();
+        // convert the byte array to a bitmap
+        if (data != null) {
+            return BitmapFactory.decodeByteArray(data, 0, data.length);
+        }
+        return null;
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, null, appWidgetId);
-        }
+            updateAppWidgets(context, appWidgetManager, null, null, appWidgetIds);
     }
 
     @Override

@@ -19,11 +19,23 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/audioTv"
+            android:id="@+id/audioNameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textSize="20sp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="Mashofnash Kheir" />
+
+        <TextView
+            android:id="@+id/extraInfoTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:textSize="15sp"
             tools:text="Tamer Ashour, Ayam" />
 
         <LinearLayout
@@ -38,7 +50,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_stop" />
 
             <ImageButton
@@ -48,9 +60,18 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_play" />
-
+            <ImageButton
+                android:id="@+id/pauseBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:src="@drawable/ic_pause" />
 
             <ImageButton
                 android:id="@+id/shuffleBtn"
@@ -59,7 +80,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_shuffle" />
 
         </LinearLayout>

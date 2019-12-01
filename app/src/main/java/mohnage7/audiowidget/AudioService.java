@@ -19,8 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-public class AudioService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
+public class AudioService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String ACTION_PLAY = "play";
     public static final String ACTION_STOP = "stop";
@@ -52,18 +51,23 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
                 stopSelf();
             }
             String action = intent.getStringExtra(ACTION);
-            Log.d(TAG,action);
+            Log.d(TAG, action);
             switch (action) {
                 case ACTION_PLAY:
-                    prepareMediaToBePlayed();
+                    Audio audio = getRandomAudio(audioList);
+                    updateWidget(audio, action);
+                    prepareMediaToBePlayed(audio);
                     break;
                 case ACTION_STOP:
                     stopMedia();
                     stopSelf();
+                    updateWidget(null, action);
                     break;
                 case ACTION_SHUFFLE:
                     stopMedia();
-                    prepareMediaToBePlayed();
+                    Audio audio2 = getRandomAudio(audioList);
+                    updateWidget(audio2, action);
+                    prepareMediaToBePlayed(audio2);
                     break;
                 default:
                     stopSelf();
@@ -89,28 +93,20 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
         if (c != null) {
             while (c.moveToNext()) {
-                Audio audioModel = new Audio();
                 String path = c.getString(0);
                 String album = c.getString(1);
                 String artist = c.getString(2);
-
                 String name = path.substring(path.lastIndexOf("/") + 1);
-
+                Audio audioModel = new Audio();
                 audioModel.setName(name);
                 audioModel.setAlbum(album);
                 audioModel.setArtist(artist);
                 audioModel.setPath(path);
-
-                Log.e("Name :" + name, " Album :" + album);
-                Log.e("Path :" + path, " Artist :" + artist);
-
                 tempAudioList.add(audioModel);
             }
             c.close();
         }
-
         return tempAudioList;
-
     }
 
     @Override
@@ -118,11 +114,6 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         return null;
     }
 
-    @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        //Invoked indicating buffering status of
-        //a media resource being streamed over the network.
-    }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
@@ -137,11 +128,6 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         return false;
     }
 
-    @Override
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        //Invoked to communicate some info.
-        return false;
-    }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
@@ -193,29 +179,17 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setOnPreparedListener(this);
-        mediaPlayer.setOnBufferingUpdateListener(this);
-        mediaPlayer.setOnInfoListener(this);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
-    private void updateWidget(Audio audio){
+    private void updateWidget(Audio audio, String action) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, AudioWidget.class));
-        //Now update all widgets
-        AudioWidget.updateAppWidget(this, appWidgetManager, audio, appWidgetIds[0]);
-
-//        AppWidgetManager man = AppWidgetManager.getInstance(context);
-//        int[] ids = man.getAppWidgetIds(
-//                new ComponentName(context,MyWidgetProvider.class));
-//        Intent updateIntent = new Intent();
-//        updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-//        updateIntent.putExtra(MyWidgetProvider.WIDGET_ID_KEY, ids);
-//        updateIntent.putExtra(MyWidgetProvider.WIDGET_DATA_KEY, data);
-//        context.sendBroadcast(updateIntent);
+        //Now update all widgets, We also can update our widget via Broadcast.
+        AudioWidget.updateAppWidgets(this, appWidgetManager, audio,action, appWidgetIds);
     }
-    private void prepareMediaToBePlayed() {
-        Audio audio = getRandomAudio(audioList);
-        updateWidget(audio);
+
+    private void prepareMediaToBePlayed(Audio audio) {
         String mediaFile = audio.getPath();
         if (mediaFile != null && !mediaFile.isEmpty()) {
             try {
