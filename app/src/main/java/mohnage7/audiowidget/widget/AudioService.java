@@ -115,7 +115,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
                 c.close();
             }
         } catch (SecurityException e) {
-            Log.e(TAG, "Please enable storage permission from AudioActivity.");
+            Log.e(TAG, "Please enable storage permission from AudioActivity or settings.");
             Log.e(TAG, e.getLocalizedMessage());
         }
         return tempAudioList;
