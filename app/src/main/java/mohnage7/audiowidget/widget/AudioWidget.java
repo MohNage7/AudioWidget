@@ -14,6 +14,11 @@ import android.widget.RemoteViews;
 import mohnage7.audiowidget.R;
 import mohnage7.audiowidget.data.Audio;
 
+import static mohnage7.audiowidget.widget.AudioService.ACTION_PAUSE;
+import static mohnage7.audiowidget.widget.AudioService.ACTION_PLAY;
+import static mohnage7.audiowidget.widget.AudioService.ACTION_SHUFFLE;
+import static mohnage7.audiowidget.widget.AudioService.ACTION_STOP;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -25,12 +30,32 @@ public class AudioWidget extends AppWidgetProvider {
     private static final int SHUFFLE_REQUEST_CODE = 3;
     private static final String FILE_EXTENSION = ".mp3";
 
-    private static void setPendingIntent(Context context, int appWidgetId, RemoteViews remoteViews, String actionPlay, int i, int p) {
-        Intent playIntent = new Intent(context, AudioService.class);
-        playIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetId);
-        playIntent.putExtra(AudioService.ACTION, actionPlay);
-        PendingIntent playPendingIntent = PendingIntent.getService(context, i, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteViews.setOnClickPendingIntent(p, playPendingIntent);
+    private static void setPendingIntent(Context context, int appWidgetId, RemoteViews remoteViews, String actionPlay) {
+        Intent intent = new Intent(context, AudioService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetId);
+        intent.putExtra(AudioService.ACTION, actionPlay);
+        PendingIntent pendingIntent;
+        switch (actionPlay) {
+            case ACTION_PLAY:
+                pendingIntent = PendingIntent.getService(context, PLAY_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.playBtn, pendingIntent);
+                break;
+            case ACTION_PAUSE:
+                pendingIntent = PendingIntent.getService(context, PAUSE_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.pauseBtn, pendingIntent);
+                break;
+            case ACTION_SHUFFLE:
+                pendingIntent = PendingIntent.getService(context, SHUFFLE_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.shuffleBtn, pendingIntent);
+                break;
+            case ACTION_STOP:
+                pendingIntent = PendingIntent.getService(context, STOP_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(R.id.stopBtn, pendingIntent);
+                break;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + actionPlay);
+        }
     }
 
     public static void updateAppWidgets(Context context, AppWidgetManager appWidgetManager,
@@ -40,10 +65,10 @@ public class AudioWidget extends AppWidgetProvider {
                     R.layout.audio_widget);
 
             // set pending intent to be fired when user interacts with the widget control buttons.
-            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_PLAY, PLAY_REQUEST_CODE, R.id.playBtn);
-            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_PAUSE, PAUSE_REQUEST_CODE, R.id.pauseBtn);
-            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_SHUFFLE, SHUFFLE_REQUEST_CODE, R.id.shuffleBtn);
-            setPendingIntent(context, appWidgetId, remoteViews, AudioService.ACTION_STOP, STOP_REQUEST_CODE, R.id.stopBtn);
+            setPendingIntent(context, appWidgetId, remoteViews, ACTION_PLAY);
+            setPendingIntent(context, appWidgetId, remoteViews, ACTION_PAUSE);
+            setPendingIntent(context, appWidgetId, remoteViews, ACTION_SHUFFLE);
+            setPendingIntent(context, appWidgetId, remoteViews, ACTION_STOP);
 
             // update views
             fillViewsWithData(context, audio, remoteViews);
@@ -51,6 +76,7 @@ public class AudioWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         }
     }
+
 
     private static void fillViewsWithData(Context context, Audio audio, RemoteViews remoteViews) {
         if (audio != null) {
@@ -67,12 +93,12 @@ public class AudioWidget extends AppWidgetProvider {
     private static void updateControlViewsAccordingToAction(String action, RemoteViews remoteViews) {
         if (action != null) {
             switch (action) {
-                case AudioService.ACTION_PLAY:
+                case ACTION_PLAY:
                 case AudioService.ACTION_SHUFFLE:
                     remoteViews.setViewVisibility(R.id.playBtn, View.GONE);
                     remoteViews.setViewVisibility(R.id.pauseBtn, View.VISIBLE);
                     break;
-                case AudioService.ACTION_PAUSE:
+                case ACTION_PAUSE:
                 case AudioService.ACTION_STOP:
                     remoteViews.setViewVisibility(R.id.playBtn, View.VISIBLE);
                     remoteViews.setViewVisibility(R.id.pauseBtn, View.GONE);

@@ -101,15 +101,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
             if (c != null) {
                 while (c.moveToNext()) {
-                    String path = c.getString(0);
-                    String album = c.getString(1);
-                    String artist = c.getString(2);
-                    String name = path.substring(path.lastIndexOf("/") + 1);
-                    Audio audioModel = new Audio();
-                    audioModel.setName(name);
-                    audioModel.setAlbum(album);
-                    audioModel.setArtist(artist);
-                    audioModel.setPath(path);
+                    Audio audioModel = createAudioModel(c);
                     tempAudioList.add(audioModel);
                 }
                 c.close();
@@ -119,6 +111,19 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
             Log.e(TAG, e.getLocalizedMessage());
         }
         return tempAudioList;
+    }
+
+    private Audio createAudioModel(Cursor c) {
+        String path = c.getString(0);
+        String album = c.getString(1);
+        String artist = c.getString(2);
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Audio audioModel = new Audio();
+        audioModel.setName(name);
+        audioModel.setAlbum(album);
+        audioModel.setArtist(artist);
+        audioModel.setPath(path);
+        return audioModel;
     }
 
     @Override
