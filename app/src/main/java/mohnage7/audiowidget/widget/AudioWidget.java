@@ -30,12 +30,12 @@ public class AudioWidget extends AppWidgetProvider {
     private static final int SHUFFLE_REQUEST_CODE = 3;
     private static final String FILE_EXTENSION = ".mp3";
 
-    private static void setPendingIntent(Context context, int appWidgetId, RemoteViews remoteViews, String actionPlay) {
+    private static void setPendingIntent(Context context, int appWidgetId, RemoteViews remoteViews, String action) {
         Intent intent = new Intent(context, AudioService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetId);
-        intent.putExtra(AudioService.ACTION, actionPlay);
+        intent.putExtra(AudioService.ACTION, action);
         PendingIntent pendingIntent;
-        switch (actionPlay) {
+        switch (action) {
             case ACTION_PLAY:
                 pendingIntent = PendingIntent.getService(context, PLAY_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 remoteViews.setOnClickPendingIntent(R.id.playBtn, pendingIntent);
@@ -54,7 +54,7 @@ public class AudioWidget extends AppWidgetProvider {
                 break;
 
             default:
-                throw new IllegalStateException("Unexpected value: " + actionPlay);
+                throw new IllegalStateException("Unexpected value: " + action);
         }
     }
 
